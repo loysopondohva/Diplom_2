@@ -29,6 +29,7 @@
 - `tests/test_user.py` - тесты создания и авторизации пользователя.
 - `tests/test_order.py` - тесты создания заказа.
 - `conftest.py` - настройки и фикстуры для тестов.
+- `allure-report/index.html` - allure отчёт о прогоне тестов.
 
 
 ## Инструкция по запуску:
@@ -44,3 +45,6 @@
 ### 3. Посмотреть отчет по прогону html
 
 > allure serve ./allure-results
+
+### 4. Сгенерировать отчёт в один файл, по прогону html
+> allure generate --single-file ./allure-results
