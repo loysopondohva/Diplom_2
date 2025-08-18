@@ -1,3 +1,4 @@
+import allure
 import requests
 import data
 import urls
@@ -5,6 +6,7 @@ import urls
 
 class OrderMethods:
     @staticmethod
+    @allure.step("Создаём заказ")
     def order_create(order_body, token = None):
         headers = {}
         if token:
@@ -14,5 +16,6 @@ class OrderMethods:
         return response
 
     @staticmethod
+    @allure.step("Получаем список заказов")
     def get_orders_list():
         return requests.get(f'{urls.BASE_URL}{urls.GET_ORDERS}')

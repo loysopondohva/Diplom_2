@@ -57,16 +57,15 @@ class TestOrder:
             assert response.json()['order']['number'], \
                 f"Ожидался Номер заказа но, не получен"
 
-    @allure.title('Проверка ошибки при создании заказа с невалидными ингредиентами')
+    @allure.title('Проверка ошибки при создании заказа с пустым списком ингредиентов')
     @pytest.mark.parametrize('order_data, expected_data, allure_annotation', [
         ({}, data.ResponseData.ORDER_CREATION_FAILED_NO_INGREDIENTS, "без ингредиентов"),                                   # без ингредиентов
         ({"ingredients": []}, data.ResponseData.ORDER_CREATION_FAILED_NO_INGREDIENTS, "с пустым список ингредиентов"),                   # пустой список ингредиентов
-        ({"ingredients": ["12345678"]}, data.ResponseData.ORDER_CREATION_FAILED_INVALID_INGREDIENT_HASH, "с неверным хэш ингредиента") ,# неверный хэш
      ])
     def test_create_order_wrong_ingredients_failed(self, order_data, expected_data, allure_annotation):
         order_data = order_data
         expected_data = expected_data
-        response = OrderMethods.order_create(order_data)
+
         with allure.step(f'Проверяем создание заказа {allure_annotation}'):
             response = OrderMethods.order_create(order_data)
 
@@ -74,10 +73,20 @@ class TestOrder:
             assert response.status_code == expected_data['code'], \
                 f"Ожидался код {expected_data['code']}, получен {response.status_code}"
 
-            if('success' in expected_data.keys()):
-                assert response.json()['success'] == expected_data['success'], \
-                    f"Ожидался success-код {expected_data['success']}, получен {response.json()['success']}"
+            assert response.json()['success'] == expected_data['success'], \
+                f"Ожидался success-код {expected_data['success']}, получен {response.json()['success']}"
 
-            if ('message' in expected_data.keys()):
-                assert response.json()['message'] == expected_data['message'], \
-                    f"Ожидалось сообщение {expected_data['message']}, получен {response.json()['message']}"
+            assert response.json()['message'] == expected_data['message'], \
+                f"Ожидалось сообщение {expected_data['message']}, получен {response.json()['message']}"
+
+    @allure.title('Проверка ошибки при создании заказа с неправильным хэшем ингредиента')
+    def test_create_order_wrong_ingredient_hash_failed(self):
+        order_data = {"ingredients": ["12345678"]}
+        expected_data = data.ResponseData.ORDER_CREATION_FAILED_INVALID_INGREDIENT_HASH
+
+        with allure.step(f'Проверяем создание заказа с неверным хешем ингредиентов'):
+            response = OrderMethods.order_create(order_data)
+
+        with allure.step('Проверяем ответ'):
+            assert response.status_code == expected_data['code'], \
+                f"Ожидался код {expected_data['code']}, получен {response.status_code}"
